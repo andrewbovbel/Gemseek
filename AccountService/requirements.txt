@@ -1,0 +1,8 @@
+fastapi
+pydantic
+pyjwt
+uvicorn
+bcrypt
+psycopg2-binary
+sqlalchemy
+databases
