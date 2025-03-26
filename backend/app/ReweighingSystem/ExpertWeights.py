@@ -1,0 +1,2 @@
+class ExpertWeights:
+    pass
