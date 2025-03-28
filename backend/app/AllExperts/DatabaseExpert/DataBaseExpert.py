@@ -8,7 +8,7 @@ class DataBaseExpert(Expert):
         self.api = api
 
     def analyzeInput(self, input: Input) -> str:
-        pass
+        return "diamond"
 
     def createQuery(self) -> str:
         pass

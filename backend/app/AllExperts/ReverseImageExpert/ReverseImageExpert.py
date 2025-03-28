@@ -8,7 +8,7 @@ class ReverseImageExpert(Expert):
         self.api = api
 
     def analyzeInput(self, input: Input) -> str:
-        pass
+        return "Diamond"
 
     def createSearchPrompt(self, input: Input):
         pass

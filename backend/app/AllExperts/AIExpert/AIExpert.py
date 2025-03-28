@@ -8,9 +8,9 @@ class AIExpert(Expert):
         self.api = api
 
     def createPrompt(self, input: Input):
-        pass
+        return "ruby"
 
     def analyzeInput(self, input: Input) -> str:
-        pass
+        return "ruby"
 
 
