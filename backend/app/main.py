@@ -12,12 +12,13 @@ from ResultManagement.ResultManager import ResultManager
 from CatalogueSearch.CatalogueSearcher import CatalogueSearcher
 from blackboard.ExpertWeights import ExpertWeights
 from ReweighExperts.ExpertReweigher import ExpertReweigher
+from GemHistory.GemHistoryLoader import get_gem_history
 app = FastAPI()
 
 weights = {
-    ExpertType.AIExpert: 0.12,
+    ExpertType.AIExpert: 0.52,
     ExpertType.ReverseImageExpert: 0.28,
-    ExpertType.DataBaseExpert: 0.7
+    ExpertType.DataBaseExpert: 0.2
 }
 expert_weights = ExpertWeights(weights)
 
@@ -26,7 +27,17 @@ async def upload(payload: InputProcessor):
     try:
         image_id, properties = payload.process_input()
         input = Input(image_id, properties)
-        return {"image_ath": input.image_id, "properties": input.properties}
+        ai_expert = AIExpert()
+        reverseImageExpert = ReverseImageExpert()
+        databaseExpert = DataBaseExpert()
+        experts = Experts([ai_expert, reverseImageExpert, databaseExpert])
+        gemstoneBlackBoard = GemstoneBlackBoard(experts, expert_weights, input)
+        gemstoneBlackBoard.activate_experts()
+        rock_name = gemstoneBlackBoard.determineFinalAnswer()
+        gem_history = get_gem_history(rock_name)
+        result_manager = ResultManager()
+        result_manager.save(rock_name, input.image_id)
+        return {"gem_name": rock_name, "gem_history": gem_history}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Image decoding failed: {str(e)}")
 
@@ -56,28 +67,3 @@ def check_integer(value: int = Body(..., embed=True)):
         return {"message": weights_as_str}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"{str(e)}")
-
-def test():
-    properties = {
-        "colour":["brown", "black"],
-        "cleavagetype":["Distinct/Good"]
-    }
-    dummy_input = Input(9, properties)
-    ai_expert = AIExpert("he")
-    reverseImageExpert = ReverseImageExpert("he")
-    databaseExpert = DataBaseExpert()
-    experts = Experts([ai_expert, reverseImageExpert, databaseExpert])
-    gemstoneBlackBoard = GemstoneBlackBoard(experts, expert_weights, dummy_input)
-    gemstoneBlackBoard.activate_experts()
-    x = gemstoneBlackBoard.determineFinalAnswer()
-    print(x)
-    # result_manager = ResultManager()
-    # result_manager.save(x, dummy_input.image_id)
-    # searcher = CatalogueSearcher()
-    # rock_name = "Diamond"
-    # rock_name = rock_name.lower()
-    # list_of_blobs = searcher.search(rock_name)
-    # print(list_of_blobs)
-    # return list_of_blobs
-
-test()
