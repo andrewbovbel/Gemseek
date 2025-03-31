@@ -15,9 +15,9 @@ from ReweighExperts.ExpertReweigher import ExpertReweigher
 app = FastAPI()
 
 weights = {
-    ExpertType.AIExpert: 0.52,
+    ExpertType.AIExpert: 0.12,
     ExpertType.ReverseImageExpert: 0.28,
-    ExpertType.DataBaseExpert: 0.2
+    ExpertType.DataBaseExpert: 0.7
 }
 expert_weights = ExpertWeights(weights)
 
@@ -42,35 +42,42 @@ def get_rock(rock_name: str):
 
 @app.post("/reshuffle")
 def check_integer(value: int = Body(..., embed=True)):
-    expert_weights = ExpertWeights.getInstance()
-    reweigh_experts = ExpertReweigher()
-    if value == -1:
-        reweigh_experts.reshuffle_negative()
+    try:
+        expert_weights = ExpertWeights.getInstance()
+        reweigh_experts = ExpertReweigher()
+        if value == -1:
+            reweigh_experts.reshuffle_negative()
 
-    if value == 1:
-       reweigh_experts.reshuffle_positive()
-    # Convert Enum keys to string for JSON serialization
-    weights = expert_weights.getAllWeights()
-    weights_as_str = {expert.name: weight for expert, weight in weights.items()}
-    return {"message": weights_as_str}
-
+        if value == 1:
+           reweigh_experts.reshuffle_positive()
+        # Convert Enum keys to string for JSON serialization
+        weights = expert_weights.getAllWeights()
+        weights_as_str = {expert.name: weight for expert, weight in weights.items()}
+        return {"message": weights_as_str}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"{str(e)}")
 
 def test():
+    properties = {
+        "colour":["brown", "black"],
+        "cleavagetype":["Distinct/Good"]
+    }
+    dummy_input = Input(9, properties)
     ai_expert = AIExpert("he")
     reverseImageExpert = ReverseImageExpert("he")
-    databaseExpert = DataBaseExpert("he")
+    databaseExpert = DataBaseExpert()
     experts = Experts([ai_expert, reverseImageExpert, databaseExpert])
-
-    dummy_input = Input(9,2)
     gemstoneBlackBoard = GemstoneBlackBoard(experts, expert_weights, dummy_input)
     gemstoneBlackBoard.activate_experts()
     x = gemstoneBlackBoard.determineFinalAnswer()
     print(x)
-    result_manager = ResultManager()
-    result_manager.save(x, dummy_input.image_id)
-    searcher = CatalogueSearcher()
-    rock_name = "Diamond"
-    rock_name = rock_name.lower()
-    list_of_blobs = searcher.search(rock_name)
-    print(list_of_blobs)
-    return list_of_blobs
+    # result_manager = ResultManager()
+    # result_manager.save(x, dummy_input.image_id)
+    # searcher = CatalogueSearcher()
+    # rock_name = "Diamond"
+    # rock_name = rock_name.lower()
+    # list_of_blobs = searcher.search(rock_name)
+    # print(list_of_blobs)
+    # return list_of_blobs
+
+test()
