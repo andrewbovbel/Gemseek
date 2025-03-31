@@ -6,6 +6,7 @@ import Forum from "../screens/Forum"
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AttributeFormScreen from '../screens/AttributeFormScreen.js';
 
 
 const Tab = createBottomTabNavigator();
@@ -32,6 +33,15 @@ export default function TabNavigator() {
           ),
         }}
       />
+      <Tab.Screen
+  name="Attributes"
+  component={AttributeFormScreen}
+  options={{
+    tabBarIcon: ({ color, size }) => (
+      <Ionicons name="construct-outline" size={size} color={color} />
+    ),
+  }}
+/>
       <Tab.Screen
         name="Upload"
         component={UploadScreen}

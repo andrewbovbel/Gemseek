@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'; // ✅ Get JWT Token from Redux
 
 const API_URL = "http://127.0.0.1:8002"; // ✅ Change to your FastAPI URL
 
+
 export default function UploadScreen() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [filename, setFilename] = useState(null);
