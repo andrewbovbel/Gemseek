@@ -6,7 +6,10 @@ def load_gem_history():
     with open(config_path, "r") as f:
         return json.load(f)
 
-def save_config(new_config):
-    config_path = "./GemHistory/gemhistory.json"
-    with open(config_path, "w") as f:
-        json.dump(new_config, f, indent=4)
+
+def get_gem_history(gem_name):
+    x = load_gem_history()
+    if gem_name in x:
+        return x[gem_name]
+    else:
+        return "none"
