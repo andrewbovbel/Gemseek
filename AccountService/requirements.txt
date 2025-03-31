@@ -6,3 +6,5 @@ bcrypt
 psycopg2-binary
 sqlalchemy
 databases
+google-genai
+openai
