@@ -6,5 +6,5 @@ bcrypt
 psycopg2-binary
 sqlalchemy
 databases
-google-genai
+google-genai==1.7.0
 openai
