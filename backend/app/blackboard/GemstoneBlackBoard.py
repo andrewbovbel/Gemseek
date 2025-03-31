@@ -19,6 +19,8 @@ class GemstoneBlackBoard:
         for expert in self.allexperts.experts:
             expert_weight = self._lookup_expert_weight(expert)
             answer = expert.analyzeInput(self.input)
+            if answer is None:
+                return
             answer = answer.lower()
             if answer in self.answers:
                 self.answers[answer] += expert_weight

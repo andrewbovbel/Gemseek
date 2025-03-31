@@ -13,29 +13,16 @@ class ExpertWeights:
 
     @staticmethod
     def getInstance():
-        """
-        Static access method to get the singleton instance.
-        """
         return ExpertWeights._instance
 
     def updateWeight(self, expert_type: ExpertType, new_weight: float):
-        """
-        Updates the weight for a specific ExpertType.
-        Raises ValueError if the expert_type is not already set.
-        """
         if expert_type in self.expertWeights:
             self.expertWeights[expert_type] = new_weight
         else:
             raise ValueError(f"{expert_type} has not been initialized in the weights.")
 
     def getWeight(self, expert_type: ExpertType) -> float:
-        """
-        Returns the weight for a specific ExpertType.
-        """
         return self.expertWeights.get(expert_type, 0.0)
 
     def getAllWeights(self) -> Dict[ExpertType, float]:
-        """
-        Returns all expert weights as a dictionary.
-        """
         return self.expertWeights
