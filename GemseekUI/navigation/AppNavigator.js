@@ -11,8 +11,8 @@ import { NavigationContainer } from '@react-navigation/native';
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
-  //const user = true;
-  const user = useSelector((state) => state.auth.user); // ✅ Get user from Redux
+  const user = true;
+  //const user = useSelector((state) => state.auth.user); // ✅ Get user from Redux
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
