@@ -26,14 +26,19 @@ from sqlalchemy.orm import sessionmaker, Session
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+# Configure logging to write to a local file
+logging.basicConfig(
+    filename="error.log",  # Log file name
+    level=logging.ERROR,   # Log only errors and above
+    format="%(asctime)s - %(levelname)s - %(message)s"  # Log format
+)
 
 app = FastAPI()
 
 weights = {
     ExpertType.AIExpert: 0.52,
     ExpertType.ReverseImageExpert: 0.28,
-    ExpertType.DataBaseExpert: 0.2
+    ExpertType.DataBaseExpert: 0.1
 }
 expert_weights = ExpertWeights(weights)
 
@@ -123,9 +128,24 @@ async def upload(payload: InputProcessor):
         gem_history = get_gem_history(rock_name)
         result_manager = ResultManager()
         result_manager.save(rock_name, input.image_id)
-        return {"gem_name": rock_name, "gem_history": gem_history,"uploaded_properties:": properties}
+        return {"gem_name": rock_name, "gem_history": gem_history, "uploaded_properties": properties}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Image decoding failed: {str(e)}")
+        # Log the error details to the local log file
+        logging.error(
+            "Error occurred during /upload request: %s\nReceived properties: %s\nReceived image: %s",
+            str(e),
+            payload.dict().get("properties", {}),
+            payload.dict().get("image", "")
+        )
+        # Raise the HTTPException with the same details
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": f"Image decoding failed: {str(e)}",
+                "received_properties": payload.dict().get("properties", {}),
+                "received_image": payload.dict().get("image", "")
+            }
+        )
 
 @app.get("/rock/{rock_name}")
 def get_rock(rock_name: str):
