@@ -123,7 +123,7 @@ async def upload(payload: InputProcessor):
         gem_history = get_gem_history(rock_name)
         result_manager = ResultManager()
         result_manager.save(rock_name, input.image_id)
-        return {"gem_name": rock_name, "gem_history": gem_history}
+        return {"gem_name": rock_name, "gem_history": gem_history,"uploaded_properties:": properties}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Image decoding failed: {str(e)}")
 

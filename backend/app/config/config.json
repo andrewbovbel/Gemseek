@@ -1,5 +1,5 @@
 {
-    "openai_api_key": "",
-    "google_api_key": "",
-    "geomaterials_database_path": "C:/Users/besho/OneDrive/Documents/3A04/geomaterials.json"
+    "openai_api_key": "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",
+    "google_api_key": "AIzaSyBAOitMWyNei3S2z1yD-jlb3HWDpg3eVsQ",
+    "geomaterials_database_path": "/Users/chenruida/Downloads/geomaterials.json"
 }
