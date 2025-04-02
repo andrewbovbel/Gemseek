@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import UploadScreen from '../screens/UploadPicture';
 import GalleryScreen from '../screens/Gallery';
 import Forum from "../screens/Forum"
-import SearchCatalogScreen from "../screens/SearchCatalog";
+import SearchCatalogScreen from "../screens/SearchCatalogue";
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -68,7 +68,7 @@ export default function TabNavigator() {
         }}
       />
       <Tab.Screen
-        name="Search Catalog"
+        name="Search Catalogue"
         component={SearchCatalogScreen}
         options={{
           tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} />,

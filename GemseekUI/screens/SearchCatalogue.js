@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const API_URL = "http://127.0.0.1:8003"; 
 
-export default function SearchCatalogScreen() {
+export default function SearchCatalogueScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState([]);
 
@@ -22,7 +22,7 @@ export default function SearchCatalogScreen() {
   };
 
   return (
-    <View style={{ padding: 20 }}>
+    <View style={{ padding: 20, flex: 1}}>
       <TextInput
         placeholder="Search for a gemstone..."
         value={searchQuery}
@@ -40,23 +40,30 @@ export default function SearchCatalogScreen() {
         <Text style={{ color: 'white', textAlign: 'center' }}>Search</Text>
       </TouchableOpacity>
 
-      <FlatList
-        data={results}
-        keyExtractor={(item) => item.id.toString()} // Convert ID to string
-        renderItem={({ item }) => (
-          <View style={{ padding: 10, borderBottomWidth: 1 }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.name}</Text>
-            {item.picture ? (
-              <Image 
-                source={{ uri: `data:image/png;base64,${item.picture}` }} 
-                style={{ width: 100, height: 100, marginTop: 5 }}
-              />
-            ) : (
-              <Text>No Image Available</Text>
-            )}
-          </View>
-        )}
-      />
+      <View style={{ padding: 10 }}>
+        <Text style={{fontSize: 18, fontWeight: 'bold'}}>description</Text>
+      </View>
+
+      <View style={{flex: 1}}>
+        <FlatList
+          contentContainerStyle={{ flexGrow: 1 }}
+          data={results}
+          keyExtractor={(item) => item.id.toString()} // Convert ID to string
+          renderItem={({ item }) => (
+            <View style={{ padding: 10, borderBottomWidth: 1 }}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.name.toUpperCase()}</Text>
+              {item.picture ? (
+                <Image 
+                  source={{ uri: `data:image/png;base64,${item.picture}` }} 
+                  style={{ width: 100, height: 100, marginTop: 5 }}
+                />
+              ) : (
+                <Text>No Image Available</Text>
+              )}
+            </View>
+          )}
+        />
+      </View>
     </View>
   );
 }
