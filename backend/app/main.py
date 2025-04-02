@@ -46,8 +46,8 @@ def get_rock(rock_name: str):
     try:
         searcher = CatalogueSearcher()
         rock_name = rock_name.lower()
-        list_of_blobs = searcher.search(rock_name)
-        return list_of_blobs
+        past_results = searcher.search(rock_name)
+        return past_results
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"{str(e)}")
 
@@ -67,3 +67,4 @@ def check_integer(value: int = Body(..., embed=True)):
         return {"message": weights_as_str}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"{str(e)}")
+

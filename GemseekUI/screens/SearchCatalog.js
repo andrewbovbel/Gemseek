@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, Image } from 'react-native';
+import axios from 'axios';
+
+const API_URL = "http://127.0.0.1:8003"; 
 
 export default function SearchCatalogScreen() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [results, setResults] = useState([]); // Placeholder for past results
+  const [results, setResults] = useState([]);
 
-  // Sample past search results (replace with actual stored data)
-  const pastSearches = [
-    { id: '1', name: 'Amethyst', description: 'Purple quartz variant' },
-    { id: '2', name: 'Ruby', description: 'Red corundum gemstone' },
-    { id: '3', name: 'Sapphire', description: 'Blue corundum gemstone' }
-  ];
-
-  // Search logic
-  const handleSearch = () => {
-    const filteredResults = pastSearches.filter((gem) =>
-      gem.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setResults(filteredResults);
+  // Fetch past search results from the backend
+  const searchGemstone = async () => {
+    if (!searchQuery.trim()) return; // Prevent empty searches
+    try {
+      const response = await axios.get(`${API_URL}/rock/${searchQuery}`);
+      setResults(response.data);  // Expecting [{ id, name, picture }]
+      //Test
+      console.log("Fetched Data: ", response.data)
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
 
   return (
@@ -33,17 +34,26 @@ export default function SearchCatalogScreen() {
           borderRadius: 5
         }}
       />
-      <TouchableOpacity onPress={handleSearch} style={{ padding: 10, backgroundColor: 'blue', borderRadius: 5 }}>
+      <TouchableOpacity 
+        onPress={searchGemstone} 
+        style={{ padding: 10, backgroundColor: 'blue', borderRadius: 5 }}>
         <Text style={{ color: 'white', textAlign: 'center' }}>Search</Text>
       </TouchableOpacity>
 
       <FlatList
         data={results}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()} // Convert ID to string
         renderItem={({ item }) => (
           <View style={{ padding: 10, borderBottomWidth: 1 }}>
             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.name}</Text>
-            <Text>{item.description}</Text>
+            {item.picture ? (
+              <Image 
+                source={{ uri: `data:image/png;base64,${item.picture}` }} 
+                style={{ width: 100, height: 100, marginTop: 5 }}
+              />
+            ) : (
+              <Text>No Image Available</Text>
+            )}
           </View>
         )}
       />
