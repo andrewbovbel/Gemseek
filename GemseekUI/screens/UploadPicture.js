@@ -8,6 +8,7 @@ const UPLOAD_API = "http://127.0.0.1:8002/upload-gemstone";
 const ML_API = "http://localhost:8003/upload";
 const PUT_METADATA_API = "http://127.0.0.1:8002/gemstone-photo";
 
+
 export default function UploadScreen() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [filename, setFilename] = useState(null);
