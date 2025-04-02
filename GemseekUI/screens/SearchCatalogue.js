@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, Image, Dimensions } from 'react-native';
 import axios from 'axios';
 
 const API_URL = "http://127.0.0.1:8003"; 
+const { width } = Dimensions.get('window'); // Get screen width
 
 export default function SearchCatalogueScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,7 +23,7 @@ export default function SearchCatalogueScreen() {
   };
 
   return (
-    <View style={{ padding: 20, flex: 1}}>
+    <View style={{ padding: 20, flex: 1 }}>
       <TextInput
         placeholder="Search for a gemstone..."
         value={searchQuery}
@@ -41,29 +42,43 @@ export default function SearchCatalogueScreen() {
       </TouchableOpacity>
 
       <View style={{ padding: 10 }}>
-        <Text style={{fontSize: 18, fontWeight: 'bold'}}>description</Text>
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Description</Text> {/* Display gemstone description */}
       </View>
 
-      <View style={{flex: 1}}>
-        <FlatList
-          contentContainerStyle={{ flexGrow: 1 }}
-          data={results}
-          keyExtractor={(item) => item.id.toString()} // Convert ID to string
-          renderItem={({ item }) => (
-            <View style={{ padding: 10, borderBottomWidth: 1 }}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.name.toUpperCase()}</Text>
-              {item.picture ? (
-                <Image 
-                  source={{ uri: `data:image/png;base64,${item.picture}` }} 
-                  style={{ width: 100, height: 100, marginTop: 5 }}
-                />
-              ) : (
-                <Text>No Image Available</Text>
-              )}
-            </View>
-          )}
-        />
+      <View style={{ padding: 10 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Past Results:</Text> {/* Display Past Gemstone Results */}
       </View>
+
+      <FlatList
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+        data={results}
+        keyExtractor={(item, index) => index.toString()} // Convert index to string
+        renderItem={({ item, index }) => (
+          <View style={{ 
+            flexDirection: "row", // Align items in a row
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: 15,
+            borderBottomWidth: 1
+          }}>
+            {/* Left side: ID and Name */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>#{index + 1}</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{item.name.toUpperCase()}</Text>
+            </View>
+
+            {/* Right side: Image */}
+            {item.picture ? (
+              <Image 
+                source={{ uri: `data:image/png;base64,${item.picture}` }} 
+                style={{ width: width * 0.3, height: width * 0.3, resizeMode: "contain" }} 
+              />
+            ) : (
+              <Text>No Image</Text>
+            )}
+          </View>
+        )}
+      />
     </View>
   );
 }
