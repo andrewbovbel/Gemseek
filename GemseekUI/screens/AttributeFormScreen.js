@@ -1,0 +1,173 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  Button,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  Platform
+} from 'react-native';
+
+const Checkbox = ({ label, checked, onChange }) => (
+  <TouchableOpacity onPress={onChange} style={styles.checkboxContainer}>
+    <View style={[styles.checkbox, checked && styles.checkedBox]} />
+    <Text style={styles.checkboxLabel}>{label}</Text>
+  </TouchableOpacity>
+);
+
+export default function AttributeFormScreen() {
+  const [formData, setFormData] = useState({
+    colour: [],
+    lustretype: [],
+    diapheny: [],
+    cleavagetype: [],
+    fracturetype: [],
+  });
+
+  const toggleOption = (field, option) => {
+    setFormData(prev => {
+      const updated = prev[field].includes(option)
+        ? prev[field].filter(item => item !== option)
+        : [...prev[field], option];
+      return { ...prev, [field]: updated };
+    });
+  };
+
+  const submitForm = async () => {
+    const payload = { properties: { ...formData }, image: "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" };
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (Platform.OS === 'web') {
+        alert(`Result from backend:\n\n${JSON.stringify(data, null, 2)}`);
+      } else {
+        Alert.alert('Result from backend', JSON.stringify(data, null, 2));
+      }
+    } catch (error) {
+      console.error(' Error sending data:', error);
+      if (Platform.OS === 'web') {
+        alert('Failed to connect to backend');
+      } else {
+        Alert.alert('Error', 'Failed to connect to backend');
+      }
+    }
+  };
+  /*const submitForm = () => {
+    const payload = { properties: { ...formData }, image: "fake_id" };
+    
+    console.log('data will be submitted:', payload);
+  
+    const message = JSON.stringify(payload, null, 2);
+    
+    if (Platform.OS === 'web') {
+      alert(`data to the backend: \n\n${message}`);
+    } else {
+      Alert.alert('data to the backend:', message);
+    }
+  };
+  */
+
+  const createCheckboxGroup = (title, field, options) => (
+    <View style={styles.group}>
+      <Text style={styles.groupTitle}>{title}:</Text>
+      <View style={styles.checkboxGroup}>
+        {options.map(option => (
+          <Checkbox
+            key={option}
+            label={option}
+            checked={formData[field].includes(option)}
+            onChange={() => toggleOption(field, option)}
+          />
+        ))}
+      </View>
+    </View>
+  );
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      {createCheckboxGroup("Colour", "colour", [
+        "White", "Black", "Gray", "Brown", "Red", "Orange", "Yellow", "Green", "Blue", "Purple"
+      ])}
+
+      {createCheckboxGroup("Lustre", "lustretype", [
+        "Adamantine", "Sub-Adamantine", "Vitreous", "Sub-Vitreous", "Resinous", "Waxy", "Greasy",
+        "Silky", "Pearly", "Metallic", "Sub-Metallic", "Dull", "Earthy"
+      ])}
+
+      {createCheckboxGroup("Transparency", "diapheny", ["Transparent", "Translucent", "Opaque"])}
+
+      {createCheckboxGroup("Cleavage", "cleavagetype", [
+        "None Observed", "Poor/Indistinct", "Imperfect/Fair", "Distinct/Good", "Very Good", "Perfect"
+      ])}
+
+      {createCheckboxGroup("Fracture", "fracturetype", [
+        "None observed", "Irregular/Uneven", "Sub-Conchoidal", "Fibrous",
+        "Splintery", "Micaceous", "Hackly", "Step-Like", "Conchoidal"
+      ])}
+
+      <View style={{ marginVertical: 20 }}>
+        <Button title="Submit" onPress={submitForm} />
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    paddingBottom: 100,
+  },
+  label: {
+    fontSize: 16,
+    marginTop: 20,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  group: {
+    marginTop: 20,
+  },
+  groupTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  checkboxGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '50%',
+    marginVertical: 4,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#888',
+    marginRight: 8,
+  },
+  checkedBox: {
+    backgroundColor: 'blue',
+  },
+  checkboxLabel: {
+    fontSize: 14,
+  },
+});
