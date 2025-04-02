@@ -7,6 +7,7 @@ import SigninScreen from '../screens/Signin';
 import SignupScreen from '../screens/Signup';
 import { useSelector } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
+import {PostDetailScreen} from "../screens/PostDetailScreen"
 
 const Stack = createStackNavigator();
 
@@ -39,6 +40,8 @@ export default function AppNavigator() {
           <>
             <Stack.Screen name="MainTabs" component={TabNavigator} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{ headerShown: true, title: '' }} />
+            
           </>
         ) : (
           // ✅ If NO user, show Signin first

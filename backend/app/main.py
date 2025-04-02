@@ -22,13 +22,24 @@ import bcrypt
 from sqlalchemy import create_engine, Column, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
-
+from fastapi.middleware.cors import CORSMiddleware
 
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
 app = FastAPI()
+
+
+# ✅ CORS Configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 weights = {
     ExpertType.AIExpert: 0.52,
@@ -38,7 +49,7 @@ weights = {
 expert_weights = ExpertWeights(weights)
 
 DATABASE_URL = "sqlite:///:memory"
-# DATABASE_URL = "postgresql://postgres:CaviarSushi33@34.28.42.153:5432/gemseek"
+DATABASE_URL = "postgresql://postgres:CaviarSushi33@34.28.42.153:5432/gemseek"
 engine = create_engine(DATABASE_URL)
 security = HTTPBearer()  # 👈 Adds Bearer Token input to Swagger UI
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

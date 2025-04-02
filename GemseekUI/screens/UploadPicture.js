@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
-import { View, Button, Image, Text, StyleSheet, Alert } from 'react-native';
+import { View, Button, Image, Text, StyleSheet, Alert, ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 
-const UPLOAD_API = "http://127.0.0.1:8002/upload-gemstone"; // your FastAPI endpoint
-const ML_API = "http://localhost:8003/upload"; // your classification endpoint
-const PUT_METADATA_API = "http://127.0.0.1:8002/gemstone-photo"; // for metadata update
+const UPLOAD_API = "http://127.0.0.1:8002/upload-gemstone";
+const ML_API = "http://localhost:8003/upload";
+const PUT_METADATA_API = "http://127.0.0.1:8002/gemstone-photo";
 
 export default function UploadScreen() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [filename, setFilename] = useState(null);
+  const [uploading, setUploading] = useState(false); // 🔒 UI lock state
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
 
   const takePhoto = async () => {
+    if (uploading) return;
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert("Permission Denied", "Camera access is required to take photos.");
@@ -35,6 +37,7 @@ export default function UploadScreen() {
   };
 
   const pickImage = async () => {
+    if (uploading) return;
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert("Permission Denied", "Gallery access is required to select images.");
@@ -60,12 +63,14 @@ export default function UploadScreen() {
       return;
     }
 
+    setUploading(true); // 🔐 Start UI lock
+
     try {
       const blob = await (await fetch(selectedImage)).blob();
 
-      // Step 1: Upload to FastAPI
       const formData = new FormData();
       formData.append("file", blob, filename);
+
       const uploadResponse = await axios.post(UPLOAD_API, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -74,34 +79,28 @@ export default function UploadScreen() {
       });
 
       const { photo_id } = uploadResponse.data;
-
-      // Step 2: Convert blob to base64
       const base64Image = await blobToBase64(blob);
 
-      // Step 3: POST to ML API
       const mlResponse = await axios.post(ML_API, {
         image: base64Image,
-        properties: { cleavagetype: ["Poor/Indistinct"] }
+        properties: { cleavagetype: ["Poor/Indistinct"] },
       });
 
       const { gem_name, gem_history } = mlResponse.data;
 
-      console.log("||", gem_name, gem_history)
-
-      // Step 4: PUT metadata back to FastAPI
       await axios.put(`${PUT_METADATA_API}/${photo_id}`, {
         title: gem_name,
-        description: gem_history
+        description: gem_history,
       }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       Alert.alert("Upload Complete", `Identified as: ${gem_name}`);
     } catch (error) {
       console.error("Upload flow failed", error.response?.data || error.message);
       Alert.alert("Upload Failed", error.response?.data?.detail || "Something went wrong.");
+    } finally {
+      setUploading(false); // 🔓 Re-enable UI
     }
   };
 
@@ -110,7 +109,7 @@ export default function UploadScreen() {
       const reader = new FileReader();
       reader.onerror = reject;
       reader.onload = () => {
-        const base64data = reader.result.split(',')[1]; // Remove data:image/...;base64,
+        const base64data = reader.result.split(',')[1];
         resolve(base64data);
       };
       reader.readAsDataURL(blob);
@@ -124,6 +123,15 @@ export default function UploadScreen() {
       <Button title="Take a Photo 📸" onPress={takePhoto} />
       <Button title="Pick from Gallery 📂" onPress={pickImage} />
       <Button title="Upload Image 🔺" onPress={uploadImage} />
+
+      {uploading && (
+        <TouchableWithoutFeedback>
+          <View style={styles.overlay}>
+            <ActivityIndicator size="large" color="#ffffff" />
+            <Text style={styles.uploadingText}>Uploading & Classifying...</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      )}
     </View>
   );
 }
@@ -132,4 +140,18 @@ const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 },
   title: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
   image: { width: 200, height: 200, marginVertical: 10, borderRadius: 10 },
+  overlay: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  uploadingText: {
+    color: '#fff',
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '500',
+  },
 });

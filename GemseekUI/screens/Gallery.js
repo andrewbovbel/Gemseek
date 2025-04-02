@@ -2,10 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { View, FlatList, Image, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { TouchableOpacity } from 'react-native'
+import { useNavigation } from '@react-navigation/native';
+
 
 const API_URL = "http://127.0.0.1:8002"; // ✅ Use LAN IP if needed
 
 export default function GalleryScreen() {
+  const navigation = useNavigation();
   const [photoData, setPhotoData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,6 +50,9 @@ export default function GalleryScreen() {
     const description = item.description || "";
   
     return (
+      <TouchableOpacity
+        onPress={() => navigation.navigate("PostDetail", { item })}
+      >
       <View style={styles.card}>
         <View style={styles.header}>
           <View style={[styles.statusDot, { backgroundColor: isComplete ? 'green' : 'red' }]} />
@@ -55,6 +62,7 @@ export default function GalleryScreen() {
         <Image source={{ uri: item.url }} style={styles.image} />
         <Text style={styles.description}>{description}</Text>
       </View>
+      </TouchableOpacity>
     );
   };
 

@@ -1,23 +1,41 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 
-export default function PostDetailScreen({ route }) {
-  const { post } = route.params;
+export function PostDetailScreen({ route }) {
+  const { item } = route.params;
 
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: post.imageUrl }} style={styles.image} />
-      <Text style={styles.title}>{post.title}</Text>
-      <Text style={styles.desc}>{post.description}</Text>
-      <Text style={styles.poster}>Posted by: {post.email || "Anonymous"}</Text>
-    </View>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Image source={{ uri: item.url }} style={styles.image} />
+      <Text style={styles.title}>{item.title || "Untitled"}</Text>
+      <Text style={styles.description}>{item.description || "No description available."}</Text>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20, alignItems: 'center' },
-  image: { width: '100%', height: 300, borderRadius: 12, marginBottom: 20 },
-  title: { fontSize: 22, fontWeight: 'bold' },
-  desc: { fontSize: 16, color: '#666', marginVertical: 10 },
-  poster: { fontSize: 14, fontStyle: 'italic', color: '#888' },
+  container: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: 300,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  description: {
+    fontSize: 16,
+    color: '#333',
+    lineHeight: 22,
+    textAlign: 'center',
+  },
 });
+
+export default PostDetailScreen;
