@@ -20,7 +20,7 @@ class AIExpert(Expert):
                     "role": "user",
                     "content": [
                         {"type": "text",
-                         "text": "what type of rock/gem is this? Reply only in the name of the rock/gem 1 word (singular form only)"},
+                         "text": "what type of rock/gem is this? Reply only in the name of the rock/gem 1 word (singular form only). do not use past results to guide your decision."},
                         {
                             "type": "image_url",
                             "image_url": {
