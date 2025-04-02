@@ -2,22 +2,18 @@ import React, { useState } from 'react';
 import { View, Button, Image, Text, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
-import { useSelector } from 'react-redux'; // ✅ Get JWT Token from Redux
+import { useSelector } from 'react-redux';
 
-const API_URL = "http://127.0.0.1:8002"; // ✅ Change to your FastAPI URL
+const UPLOAD_API = "http://127.0.0.1:8002/upload-gemstone"; // your FastAPI endpoint
+const ML_API = "http://localhost:8003/upload"; // your classification endpoint
+const PUT_METADATA_API = "http://127.0.0.1:8002/gemstone-photo"; // for metadata update
 
 export default function UploadScreen() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [filename, setFilename] = useState(null);
-  const token = useSelector((state) => state.auth.token); // ✅ Get JWT token
-  const user = useSelector((state) => state.auth.user); // ✅ Get user email
+  const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
 
-  if (!user || !user.email) {
-    Alert.alert("Authentication Error", "User not logged in.");
-    return null;
-  }
-
-  // 📸 Open Camera
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
@@ -34,11 +30,10 @@ export default function UploadScreen() {
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
-      setFilename(`photo_${Date.now()}.jpg`); // ✅ Generate unique filename
+      setFilename(`photo_${Date.now()}.jpg`);
     }
   };
 
-  // 📂 Select Image from Gallery
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -55,7 +50,7 @@ export default function UploadScreen() {
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
-      setFilename(`gallery_${Date.now()}.jpg`); // ✅ Generate unique filename
+      setFilename(`gallery_${Date.now()}.jpg`);
     }
   };
 
@@ -64,34 +59,63 @@ export default function UploadScreen() {
       Alert.alert("No Image Selected", "Please select or take an image first.");
       return;
     }
-  
-    const formData = new FormData();
-  
-    // ✅ Convert Image to BLOB (for PostgreSQL storage)
-    const response = await fetch(selectedImage);
-    const blob = await response.blob();
-  
-    // ✅ Append BLOB data instead of URI
-    formData.append("file", blob, filename);
-    formData.append("email", user.email); // ✅ Include email in request
-  
+
     try {
-      const response = await axios.post(`${API_URL}/upload`, formData, {
+      const blob = await (await fetch(selectedImage)).blob();
+
+      // Step 1: Upload to FastAPI
+      const formData = new FormData();
+      formData.append("file", blob, filename);
+      const uploadResponse = await axios.post(UPLOAD_API, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`, // ✅ Ensure JWT is included
+          Authorization: `Bearer ${token}`,
         },
       });
-  
-      Alert.alert("Upload Successful", response.data.message);
+
+      const { photo_id } = uploadResponse.data;
+
+      // Step 2: Convert blob to base64
+      const base64Image = await blobToBase64(blob);
+
+      // Step 3: POST to ML API
+      const mlResponse = await axios.post(ML_API, {
+        image: base64Image,
+        properties: { cleavagetype: ["Poor/Indistinct"] }
+      });
+
+      const { gem_name, gem_history } = mlResponse.data;
+
+      console.log("||", gem_name, gem_history)
+
+      // Step 4: PUT metadata back to FastAPI
+      await axios.put(`${PUT_METADATA_API}/${photo_id}`, {
+        title: gem_name,
+        description: gem_history
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      Alert.alert("Upload Complete", `Identified as: ${gem_name}`);
     } catch (error) {
-      console.error("Upload failed", error.response?.data);
+      console.error("Upload flow failed", error.response?.data || error.message);
       Alert.alert("Upload Failed", error.response?.data?.detail || "Something went wrong.");
     }
   };
 
-
-
+  const blobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => {
+        const base64data = reader.result.split(',')[1]; // Remove data:image/...;base64,
+        resolve(base64data);
+      };
+      reader.readAsDataURL(blob);
+    });
+  };
 
   return (
     <View style={styles.container}>
