@@ -123,6 +123,8 @@ def get_db():
 async def upload(payload: InputProcessor):
     try:
         image_id, properties = payload.process_input()
+        if not properties:
+            raise HTTPException(status_code=400, detail="Missing properties in upload request.")
         input = Input(image_id, properties)
         ai_expert = AIExpert()
         reverseImageExpert = ReverseImageExpert()
