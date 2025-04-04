@@ -1,5 +1,5 @@
 {
-    "openai_api_key": "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",
-    "google_api_key": "AIzaSyBAOitMWyNei3S2z1yD-jlb3HWDpg3eVsQ",
+    "openai_api_key": "",
+    "google_api_key": "",
     "geomaterials_database_path": "/Users/chenruida/Downloads/geomaterials.json"
 }
