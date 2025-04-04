@@ -86,6 +86,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="signin")
 # ✅ Define allowed frontend URLs
 origins = [
     "http://localhost:8001",
+    "http://localhost:8081",
     "http://localhost:3000",  # ✅ Expo app (adjust to your port)
     "http://127.0.0.1:8001",  # ✅ Alternative localhost version
     "http://localhost:19006", # ✅ Expo development URL

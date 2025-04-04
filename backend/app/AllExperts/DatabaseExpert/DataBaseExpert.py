@@ -12,6 +12,8 @@ class DataBaseExpert(Expert):
 
     def analyzeInput(self, input) -> str:
         filtered_materials = [m for m in self.data["results"] if self._matches_all_filters(m, input.properties)]
+        if len(filtered_materials) == 0:
+            return "" 
         return filtered_materials[0]["name"].lower()
 
 
