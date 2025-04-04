@@ -6,6 +6,9 @@ import Forum from "../screens/Forum"
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AttributeForm from '../screens/AttributeFormScreen';
+import AttributeFormScreen from '../screens/AttributeFormScreen';
+
 
 
 const Tab = createBottomTabNavigator();
@@ -20,9 +23,22 @@ export default function TabNavigator() {
         tabBarInactiveTintColor: 'gray',
       }}
     >
+    
       <Tab.Screen
         name="Forum"
         component={Forum}
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name="newspaper-outline" size={size} color={color} />,
+          headerRight: () => (
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+              <Ionicons name="person-circle-outline" size={30} color="black" style={{ marginRight: 15 }} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="AttributeForm"
+        component={AttributeFormScreen}
         options={{
           tabBarIcon: ({ color, size }) => <Ionicons name="newspaper-outline" size={size} color={color} />,
           headerRight: () => (
