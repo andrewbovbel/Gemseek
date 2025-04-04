@@ -8,15 +8,15 @@ const { width } = Dimensions.get('window'); // Get screen width
 export default function SearchCatalogueScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState([]);
+  const [description, setDescription] = useState('');
 
   // Fetch past search results from the backend
   const searchGemstone = async () => {
     if (!searchQuery.trim()) return; // Prevent empty searches
     try {
       const response = await axios.get(`${API_URL}/rock/${searchQuery}`);
-      setResults(response.data);  // Expecting [{ id, name, picture }]
-      //Test
-      console.log("Fetched Data: ", response.data)
+      setResults(response.data.results);  // Expecting [{ id, name, picture }]
+      setDescription(response.data.description);  // Expecting [{ id, name, picture }]
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -42,7 +42,7 @@ export default function SearchCatalogueScreen() {
       </TouchableOpacity>
 
       <View style={{ padding: 10 }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Description</Text> {/* Display gemstone description */}
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Description: {description}</Text> {/* Display gemstone description */}
       </View>
 
       <View style={{ padding: 10 }}>

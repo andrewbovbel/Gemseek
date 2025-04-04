@@ -1,5 +1,6 @@
 from ResultManagement.PastResults.pastResultsLoader import load_past_results
 from artifacts.picture_loader import load_pictures
+from GemHistory.GemHistoryLoader import get_gem_history
 
 class CatalogueSearcher:
 
@@ -9,6 +10,7 @@ class CatalogueSearcher:
     def search(self, name_of_rock):
         past_results = load_past_results()  # Map of gem name → list of search IDs
         pictures = load_pictures()  # Map of gem ID → picture blob
+        description = get_gem_history(name_of_rock) # Fetches description of Gem from gemHistory.json if available
 
         if name_of_rock not in past_results:
             return []  #if rock isn't in past results, then return empty list
@@ -25,4 +27,7 @@ class CatalogueSearcher:
             for image_id in list_of_ids
         ]
         
-        return search_results
+        return {
+            "description": description,
+            "results": search_results
+        }
