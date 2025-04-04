@@ -8,15 +8,15 @@ const { width } = Dimensions.get('window'); // Get screen width
 export default function SearchCatalogueScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState([]);
+  const [description, setDescription] = useState('');
 
   // Fetch past search results from the backend
   const searchGemstone = async () => {
     if (!searchQuery.trim()) return; // Prevent empty searches
     try {
       const response = await axios.get(`${API_URL}/rock/${searchQuery}`);
-      setResults(response.data);  // Expecting [{ id, name, picture }]
-      //Test
-      console.log("Fetched Data: ", response.data)
+      setResults(response.data.results);  // Expecting [{ id, name, picture }]
+      setDescription(response.data.description);  // Expecting [{ id, name, picture }]
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -42,11 +42,41 @@ export default function SearchCatalogueScreen() {
       </TouchableOpacity>
 
       <View style={{ padding: 10 }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Description</Text> {/* Display gemstone description */}
+        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Description: {description}</Text> {/* Display gemstone description */}
       </View>
 
       <View style={{ padding: 10 }}>
         <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Past Results:</Text> {/* Display Past Gemstone Results */}
+      </View>
+
+      <View style={{ 
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc'
+      }}>
+        {/* ID Column */} 
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>ID</Text> 
+        </View>
+
+        {/* Divider */}
+        <View style={{ width: 1, height: '100%', backgroundColor: '#ccc' }} />
+
+        {/* Name Column */}
+        <View style={{ flex: 2, alignItems: 'center' }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Name</Text> 
+        </View>
+
+        {/* Divider */}
+        <View style={{ width: 1, height: '100%', backgroundColor: '#ccc' }} />
+
+        {/* Image Column */}
+        <View style={{ flex: 3, alignItems: 'center' }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Image</Text>
+        </View>
       </View>
 
       <FlatList
@@ -55,28 +85,43 @@ export default function SearchCatalogueScreen() {
         keyExtractor={(item, index) => index.toString()} // Convert index to string
         renderItem={({ item, index }) => (
           <View style={{ 
-            flexDirection: "row", // Align items in a row
+            flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
             padding: 15,
-            borderBottomWidth: 1
+            borderBottomWidth: 1,
+            borderBottomColor: '#eee'
           }}>
-            {/* Left side: ID and Name */}
-            <View style={{ flex: 1 }}>
+            {/* ID */}
+            <View style={{ flex: 1 , alignItems: 'center' }}>
               <Text style={{ fontSize: 16, fontWeight: 'bold' }}>#{index + 1}</Text>
-              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{item.name.toUpperCase()}</Text>
             </View>
-
-            {/* Right side: Image */}
-            {item.picture ? (
-              <Image 
-                source={{ uri: `data:image/png;base64,${item.picture}` }} 
-                style={{ width: width * 0.3, height: width * 0.3, resizeMode: "contain" }} 
-              />
-            ) : (
-              <Text>No Image</Text>
-            )}
-          </View>
+          
+            {/* Divider */}
+            <View style={{ width: 1, height: '100%', backgroundColor: '#ddd' }} />
+          
+            {/* Name */}
+            <View style={{ flex: 2, alignItems: 'center' }}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold' }} numberOfLines={1}>
+                {item.name.toUpperCase()}
+              </Text>
+            </View>
+          
+            {/* Divider */}
+            <View style={{ width: 1, height: '100%', backgroundColor: '#ddd' }} />
+          
+            {/* Image */}
+            <View style={{ flex: 3, alignItems: 'center' }}>
+              {item.picture ? (
+                <Image 
+                  source={{ uri: `data:image/png;base64,${item.picture}` }} 
+                  style={{ width: width * 0.25, height: width * 0.25, resizeMode: "contain" }} 
+                />
+              ) : (
+                <Text>No Image</Text>
+              )}
+            </View>
+          </View>          
         )}
       />
     </View>
