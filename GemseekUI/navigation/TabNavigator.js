@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AttributeFormScreen from '../screens/AttributeFormScreen.js';
+import PictureAndProperties from '../screens/PictureAndProperties.js';
 
 
 const Tab = createBottomTabNavigator();
@@ -35,26 +36,14 @@ export default function TabNavigator() {
         }}
       />
       <Tab.Screen
-  name="Attributes"
-  component={AttributeFormScreen}
+  name="GemSeek"
+  component={PictureAndProperties}
   options={{
     tabBarIcon: ({ color, size }) => (
       <Ionicons name="construct-outline" size={size} color={color} />
     ),
   }}
 />
-      <Tab.Screen
-        name="Upload"
-        component={UploadScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name="cloud-upload-outline" size={size} color={color} />,
-          headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-              <Ionicons name="person-circle-outline" size={30} color="black" style={{ marginRight: 15 }} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
       <Tab.Screen
         name="Gallery"
         component={GalleryScreen}
