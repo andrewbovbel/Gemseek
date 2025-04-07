@@ -3,9 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const API_URL = process.env.NODE_ENV === 'development'
-  ? 'http://127.0.0.1:8000'
+  ? 'http://172.20.10.2:8003'
+  
   : 'https://fastapi-app-427504069028.us-central1.run.app';
-
 const API_KEY = 'sushi';
 
 const axiosInstance = axios.create({

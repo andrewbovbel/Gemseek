@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, Image, Dimensions } from 'react-native';
 import axios from 'axios';
 
-const API_URL = "http://127.0.0.1:8003"; 
+const API_URL = "http://172.20.10.2:8003"; 
 const { width } = Dimensions.get('window'); // Get screen width
 
 export default function SearchCatalogueScreen() {

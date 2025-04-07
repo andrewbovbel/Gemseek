@@ -6,7 +6,7 @@ import { TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 
 
-const API_URL = "http://127.0.0.1:8002"; // ✅ Use LAN IP if needed
+const API_URL = "http://172.20.10.2:8002"; // ✅ Use LAN IP if needed
 
 export default function GalleryScreen() {
   const navigation = useNavigation();
